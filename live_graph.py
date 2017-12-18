@@ -8,6 +8,7 @@ import time
 #from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 #import matplotlib.pyplot as plt
 import numpy as np
+from PlotDefinition import PlotDefinition
 
 #TODO: proper data stream (database?)
 #TODO: plot parameter input ala autoplot.py
@@ -60,19 +61,36 @@ y2_arr = []
 y3_arr = []
 
 #function to add plotItems to GraphicsLayout and format them
-def make_plot(coord, title, data_style):
+def make_plot(coord, data_style, title='', xlab='', ylab=''):
     plot = []
-    plot.append(plot_box.addPlot(row=coord[0], col=coord[1], title=title))
+    plot.append(plot_box.addPlot(row=coord[0], col=coord[1], title=title, labels={"left":ylab,"bottom":xlab}))
     plot[0].addLegend()
+    print(data_style)
     for dataset in data_style:
         plot.append(plot[0].plot(name=dataset[0], pen=dataset[1]))
     return plot
 
 #make plots
-plot1 = make_plot((0,0), 'cos', [['cos(x)','r']])
-plot2 = make_plot((0,1), '-cos', [['-cos(x)','g']])
-plot3 = make_plot((1,0), 'destructive interference', [['cos(x) + -cos(x)','b']])
-plot4 = make_plot((1,1), 'cos and -cos', [['cos(x)','r'],['-cos(x)','g']])
+p1 = PlotDefinition((0,0), title='cos', xlabel='time(s)')
+p2 = PlotDefinition((0,1), title='-cos', xlabel='time(s)')
+p3 = PlotDefinition((1,0), title='destructive interference', xlabel='time(s)')
+p4 = PlotDefinition((1,1), title='cos and -cos', xlabel='time(s)')
+
+p1.setX('time')
+p2.setX('time')
+p3.setX('time')
+p4.setX('time')
+
+p1.addY('cos(x)','r')
+p2.addY('-cos(x)','g')
+p3.addY('cos(x) + -cos(x)','b')
+p4.addY('cos(x)','r')
+p4.addY('-cos(x)','g')
+
+p1.make_plot(plot_box)
+p2.make_plot(plot_box)
+p3.make_plot(plot_box)
+p4.make_plot(plot_box)
 
 #fake data stream in place of serial or some other type of read in
 def fake_data():
@@ -102,11 +120,11 @@ def update():
         y3_arr = y3_arr[-data_range:]
 
     #update plots with new data
-    plot1[1].setData(t_arr,y1_arr)
-    plot2[1].setData(t_arr,y2_arr)
-    plot3[1].setData(t_arr,y3_arr)
-    plot4[1].setData(t_arr,y1_arr)
-    plot4[2].setData(t_arr,y2_arr)
+    #plot1[1].setData(t_arr,y1_arr)
+    #plot2[1].setData(t_arr,y2_arr)
+    #plot3[1].setData(t_arr,y3_arr)
+    #plot4[1].setData(t_arr,y1_arr)
+    #plot4[2].setData(t_arr,y2_arr)
 
 #display window
 #TODO: figure out window sizing (WTF WHY U NO WORK NO MATTER WHAT I TRY IT STILL CUTS OFF PARTS OF RIGHT MOST PLOTS)
