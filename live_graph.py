@@ -2,11 +2,7 @@ import pandas as pd
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 import pyqtgraph as pg
-#import serial
 import time
-#from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-#from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-#import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from PlotDefinition import PlotDefinition
@@ -21,7 +17,7 @@ from PlotDefinition import PlotDefinition
 #TODO: add numerical fields (not just graphs)
 
 #window title
-run_name = "live graph display test"
+run_name = "MASA Live Data Dashboard"
 
 #initialize Qt
 app = QtGui.QApplication([])
@@ -38,7 +34,7 @@ w.setLayout(layout)
 zr = 0
 zc = 0
 
-#number of datapoints to store/retrieve
+#max number of datapoints to store/retrieve
 data_range = 200
 
 #add area for tiled plots
@@ -69,27 +65,27 @@ def make_plot(coord, data_style, title='', xlab='', ylab=''):
         plot.append(plot[0].plot(name=dataset[0], pen=dataset[1]))
     return plot
 
-#make plots
-p1 = PlotDefinition((0,0), title='cos', xlabel='time(s)')
-p2 = PlotDefinition((0,1), title='-cos', xlabel='time(s)')
-p3 = PlotDefinition((1,0), title='destructive interference', xlabel='time(s)')
-p4 = PlotDefinition((1,1), title='cos and -cos', xlabel='time(s)')
+#make PlotDefinitions and add to list for easy iteration
+plots = []
+plots.append(PlotDefinition((0,0), title='cos', xlabel='time(s)'))
+plots.append(PlotDefinition((0,1), title='-cos', xlabel='time(s)'))
+plots.append(PlotDefinition((1,0), title='destructive interference', xlabel='time(s)'))
+plots.append(PlotDefinition((1,1), title='cos and -cos', xlabel='time(s)'))
 
-p1.setX('time')
-p2.setX('time')
-p3.setX('time')
-p4.setX('time')
+#set x axis (will be database["time"])
+for p in plots:
+    p.setX('time')
 
-p1.addY('cos(x)','r')
-p2.addY('-cos(x)','g')
-p3.addY('cos(x) + -cos(x)','b')
-p4.addY('cos(x)','r')
-p4.addY('-cos(x)','g')
+#add y datasets to each plot (note p4 has 2 datasets)
+plots[0].addY('cos(x)','r')
+plots[1].addY('-cos(x)','g')
+plots[2].addY('cos(x) + -cos(x)','b')
+plots[3].addY('cos(x)','r')
+plots[3].addY('-cos(x)','g')
 
-p1.makePlot(plot_box)
-p2.makePlot(plot_box)
-p3.makePlot(plot_box)
-p4.makePlot(plot_box)
+#make the plots and push them to window
+for p in plots:
+    p.makePlot(plot_box)
 
 #fake data stream in place of serial or some other type of read in
 def fake_data():
@@ -113,14 +109,12 @@ def update():
     database = database.tail(data_range)
 
     #update plots with new data
-    p1.updatePlot(database)
-    p2.updatePlot(database)
-    p3.updatePlot(database)
-    p4.updatePlot(database)
+    for p in plots:
+        p.updatePlot(database)
 
 #display window
-#TODO: figure out window sizing (WTF WHY U NO WORK NO MATTER WHAT I TRY IT STILL CUTS OFF PARTS OF RIGHT MOST PLOTS)
-w.show()
+#TODO: figure out window sizing (WTF WHY U NO WORK NO MATTER WHAT I TRY THE COLUMNS ARE DIFFERENT SIZES)
+w.showMaximized()
 
 #timer and tick updates
 timer = pg.QtCore.QTimer()
