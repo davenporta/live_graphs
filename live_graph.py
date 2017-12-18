@@ -8,6 +8,7 @@ import time
 #from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 #import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from PlotDefinition import PlotDefinition
 
 #TODO: proper data stream (database?)
@@ -37,8 +38,8 @@ w.setLayout(layout)
 zr = 0
 zc = 0
 
-#number of datapoints to graph
-data_range = 100
+#number of datapoints to store/retrieve
+data_range = 200
 
 #add area for tiled plots
 plot_box = pg.GraphicsLayoutWidget()
@@ -54,11 +55,9 @@ quit.clicked.connect(exit)
 layout.addWidget(quit, zr+1, zc+0)
 
 #initialize data arrays (for testing only)
-#TODO: switch to numpy arrays
-t_arr = []
-y1_arr = []
-y2_arr = []
-y3_arr = []
+#TODO: switch to pandas dataframe to imitate SQL table/database
+cols = ['time', 'cos(x)', '-cos(x)', 'cos(x) + -cos(x)']
+database = pd.DataFrame(columns=cols)
 
 #function to add plotItems to GraphicsLayout and format them
 def make_plot(coord, data_style, title='', xlab='', ylab=''):
@@ -87,10 +86,10 @@ p3.addY('cos(x) + -cos(x)','b')
 p4.addY('cos(x)','r')
 p4.addY('-cos(x)','g')
 
-p1.make_plot(plot_box)
-p2.make_plot(plot_box)
-p3.make_plot(plot_box)
-p4.make_plot(plot_box)
+p1.makePlot(plot_box)
+p2.makePlot(plot_box)
+p3.makePlot(plot_box)
+p4.makePlot(plot_box)
 
 #fake data stream in place of serial or some other type of read in
 def fake_data():
@@ -101,30 +100,23 @@ def fake_data():
 
 #update function runs on each tick
 def update():
-    global t_arr,y1_arr,y2_arr,y3_arr
+    global database, cols
 
     #get data
     t,y1,y2 = fake_data()
+    y3 = y1+y2
 
-    #add to appropriate arrays
-    t_arr.append(t)
-    y1_arr.append(y1)
-    y2_arr.append(y2)
-    y3_arr.append(y1+y2)
+    #update database
+    database = database.append(pd.DataFrame([[t,y1,y2,y3]],columns=cols))
 
     #slice off out of range data
-    if (len(t_arr)>data_range):
-        t_arr = t_arr[-data_range:]
-        y1_arr = y1_arr[-data_range:]
-        y2_arr = y2_arr[-data_range:]
-        y3_arr = y3_arr[-data_range:]
+    database = database.tail(data_range)
 
     #update plots with new data
-    #plot1[1].setData(t_arr,y1_arr)
-    #plot2[1].setData(t_arr,y2_arr)
-    #plot3[1].setData(t_arr,y3_arr)
-    #plot4[1].setData(t_arr,y1_arr)
-    #plot4[2].setData(t_arr,y2_arr)
+    p1.updatePlot(database)
+    p2.updatePlot(database)
+    p3.updatePlot(database)
+    p4.updatePlot(database)
 
 #display window
 #TODO: figure out window sizing (WTF WHY U NO WORK NO MATTER WHAT I TRY IT STILL CUTS OFF PARTS OF RIGHT MOST PLOTS)
