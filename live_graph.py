@@ -9,12 +9,14 @@ import time
 #import matplotlib.pyplot as plt
 import numpy as np
 
-#TODO: proper data stream
+#TODO: proper data stream (database?)
 #TODO: plot parameter input ala autoplot.py
 #TODO: function where I can feed plot parameters and automatically generate plots and data update functions (probably needs to be a class)
 #       make_plot is a jank step in that direction (parameters are attrocious)
 #       need to calculate subplot layout given n number of graphs
 #       this is going to be tricky (FML)
+#       or allow configuration in gui given pandas dataframe
+#TODO: add numerical fields (not just graphs)
 
 #window title
 run_name = "live graph display test"
