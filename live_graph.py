@@ -30,13 +30,16 @@ w.setLayout(layout)
 zr = 0
 zc = 0
 
+#load graph settings
+settings = pd.read_csv("graph_settings.csv")
+
 #number of points to store given tick_rate and seconds_to_store
 def tickCalc(tr, s):
     return int(s/(tr/1000))
 
 #max number of datapoints to store/retrieve
 tick_rate = 40 #in ms (calculated limit at about 35-40 ms)
-seconds_to_store = 30
+seconds_to_store = settings['seconds'].max() #save as much memory as possible (keep only what's needed)
 data_range = tickCalc(tick_rate, seconds_to_store) #this isn't right and I don't know why
 #last_time = pg.ptime.time()
 
@@ -53,8 +56,6 @@ def exit():
 quit = QtGui.QPushButton("Quit")
 quit.clicked.connect(exit)
 layout.addWidget(quit, zr+2, zc+0)
-
-settings = pd.read_csv("graph_settings.csv")
 
 #initialize data arrays (for testing only)
 #eventually load data from web database into dataframe
@@ -129,6 +130,7 @@ def update():
         p.updatePlot(database)
 
 #display window
+#using .showMaximized() instead of .show() until I can figure out sizing
 w.showMaximized()
 
 #timer and tick updates
@@ -136,5 +138,5 @@ timer = pg.QtCore.QTimer()
 timer.timeout.connect(update)
 timer.start(tick_rate)
 
-## Start the Qt event loop
+#start application (Qt Loop Cycle)
 app.exec_()
