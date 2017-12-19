@@ -17,6 +17,7 @@ alias | data title in legend (divide with " \| ")
 pen | curve style field (divide with " \| ")
 ylabel | y axis label
 row, col | subplot layout position
+seconds | seconds of data to plot (up to `seconds_to_store`)
 
 ### Required Python Libraries
 * PyQt5
