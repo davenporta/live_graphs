@@ -8,13 +8,9 @@ import pandas as pd
 from PlotDefinition import PlotDefinition
 
 #TODO: proper data stream (database?)
-#TODO: plot parameter input ala autoplot.py
-#TODO: function where I can feed plot parameters and automatically generate plots and data update functions (probably needs to be a class)
-#       make_plot is a jank step in that direction (parameters are attrocious)
-#       need to calculate subplot layout given n number of graphs
-#       this is going to be tricky (FML)
-#       or allow configuration in gui given pandas dataframe
 #TODO: add numerical fields (not just graphs)
+#TODO: mathematical operations on datasets (for calculating total thrust or pressure drop or what not)
+#TODO: figure out window sizing (WTF WHY U NO WORK NO MATTER WHAT I TRY THE COLUMNS ARE DIFFERENT SIZES)
 
 #window title
 run_name = "MASA Live Data Dashboard"
@@ -48,7 +44,7 @@ def exit():
 #quit application function
 quit = QtGui.QPushButton("Quit")
 quit.clicked.connect(exit)
-layout.addWidget(quit, zr+1, zc+0)
+layout.addWidget(quit, zr+2, zc+0)
 
 settings = pd.read_csv("graph_settings.csv")
 
@@ -56,6 +52,15 @@ settings = pd.read_csv("graph_settings.csv")
 #TODO: switch to pandas dataframe to imitate SQL table/database
 cols = ['time', 'cos', 'neg_cos', 'destruc']
 database = pd.DataFrame(columns=cols)
+
+
+def clear():
+    database.drop(database.index, inplace=True)
+
+#quit application function
+clear_data = QtGui.QPushButton("Clear Data")
+clear_data.clicked.connect(clear)
+layout.addWidget(clear_data, zr+1, zc+0)
 
 #list for easy iteration through plots
 plots = []
@@ -69,7 +74,7 @@ for i in range(len(settings.index)):
     subplot = (row['row'], row['col'])
 
     #initialize plot and add to list
-    plots.append(PlotDefinition(subplot, title=row['title'], xlabel=row['xlabel']))
+    plots.append(PlotDefinition(subplot, title=row['title'], xlabel=row['xlabel'], ylabel=row['ylabel']))
 
     #set x data
     plots[i].setX(row['x'])
@@ -113,7 +118,6 @@ def update():
         p.updatePlot(database)
 
 #display window
-#TODO: figure out window sizing (WTF WHY U NO WORK NO MATTER WHAT I TRY THE COLUMNS ARE DIFFERENT SIZES)
 w.showMaximized()
 
 #timer and tick updates

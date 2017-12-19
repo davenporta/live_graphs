@@ -5,7 +5,6 @@ class PlotDefinition:
         self.data = []
         self.range = data_range #allows individualized ranges
         self.plots = []
-        self.been_ploted = False
         self.coords = coords
         self.title = title
         self.labels = {"left": ylabel, "bottom": xlabel}
@@ -24,14 +23,10 @@ class PlotDefinition:
 
     #makes a PlotItem with proper labels and formatting and pushes it to GraphicsLayout
     def makePlot(self, plot_box):
-        if not self.been_ploted:
-            self.parent = plot_box.addPlot(row=self.coords[0], col=self.coords[1], title=self.title, labels=self.labels)
-            self.parent.addLegend()
-            for dataset in self.data:
-                self.plots.append(self.parent.plot(name=dataset[2], pen=dataset[1]))
-            self.been_ploted = True
-        else:
-            raise Exception('hell naw bruh you already did this')
+        self.parent = plot_box.addPlot(row=self.coords[0], col=self.coords[1], title=self.title, labels=self.labels)
+        self.parent.addLegend()
+        for dataset in self.data:
+            self.plots.append(self.parent.plot(name=dataset[2], pen=dataset[1]))
 
     #update the plot
     #this is why I used a class
