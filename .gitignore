@@ -1,4 +1,3 @@
 *.pyc
 *.ipynb
-*.pyc
-__pycache__/PlotDefinition.cpython-36.pyc
+__pycache__
