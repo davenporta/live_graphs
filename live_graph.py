@@ -20,8 +20,10 @@ app = QtGui.QApplication([])
 #timer
 start_time = pg.ptime.time()
 #top level
+top = QtGui.QMainWindow()
 w = QtGui.QWidget()
-w.setWindowTitle(run_name)
+top.setCentralWidget(w)
+top.setWindowTitle(run_name)
 # layout grid
 layout = QtGui.QGridLayout()
 w.setLayout(layout)
@@ -43,33 +45,41 @@ seconds_to_store = settings['seconds'].max() #save as much memory as possible (k
 data_range = tickCalc(tick_rate, seconds_to_store) #this isn't right and I don't know why
 #last_time = pg.ptime.time()
 
-
-#add area for tiled plots
-plot_box = pg.GraphicsLayoutWidget()
-layout.addWidget(plot_box, zr+0, zc+0)
-
-#quit application function
-def exit():
-    app.quit()
-
-#quit application function
-quit = QtGui.QPushButton("Quit")
-quit.clicked.connect(exit)
-layout.addWidget(quit, zr+2, zc+0)
-
 #initialize data arrays (for testing only)
 #eventually load data from web database into dataframe
 cols = ['time', 'cos', 'neg_cos', 'destruc']
 database = pd.DataFrame(columns=cols)
 
+#add area for tiled plots
+plot_box = pg.GraphicsLayoutWidget()
+layout.addWidget(plot_box, zr+0, zc+0)
 
+#status = QtGui.statusBar(top)
+mainMenu = top.menuBar()
+mainMenu.setNativeMenuBar(True)
+fileMenu = mainMenu.addMenu('&File')
+dataMenu = mainMenu.addMenu('&Data')
+
+#quit application function
+#in case more shutdown actions are needed later
+def exit():
+    app.quit()
+
+#quit application menu item
+quit = QtGui.QAction("&Quit", fileMenu)
+quit.setShortcut("Ctrl+Q")
+quit.triggered.connect(exit)
+fileMenu.addAction(quit)
+
+#clear data function
 def clear():
     database.drop(database.index, inplace=True)
 
-#quit application function
-clear_data = QtGui.QPushButton("Clear Data")
-clear_data.clicked.connect(clear)
-layout.addWidget(clear_data, zr+1, zc+0)
+#clear data menu item
+clear_data = QtGui.QAction("&Clear Data", dataMenu)
+clear_data.setShortcut("Ctrl+D")
+clear_data.triggered.connect(clear)
+dataMenu.addAction(clear_data)
 
 #list for easy iteration through plots
 plots = []
@@ -131,7 +141,7 @@ def update():
 
 #display window
 #using .showMaximized() instead of .show() until I can figure out sizing
-w.showMaximized()
+top.showMaximized()
 
 #timer and tick updates
 timer = pg.QtCore.QTimer()
