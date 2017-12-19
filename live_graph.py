@@ -49,7 +49,7 @@ layout.addWidget(quit, zr+2, zc+0)
 settings = pd.read_csv("graph_settings.csv")
 
 #initialize data arrays (for testing only)
-#TODO: switch to pandas dataframe to imitate SQL table/database
+#eventually load data from web database into dataframe
 cols = ['time', 'cos', 'neg_cos', 'destruc']
 database = pd.DataFrame(columns=cols)
 
