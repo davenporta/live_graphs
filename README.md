@@ -1,7 +1,9 @@
 # live_graphs
 Live graph dashboard for MASA testing
 
-#### Configuration
+-----------------------
+
+### Configuration
 Easily configurable with settings.csv file
 
 Column | Function
@@ -16,13 +18,13 @@ pen | curve style field (divide with " \| ")
 ylabel | y axis label
 row, col | subplot layout position
 
-#### Required Python Libraries
+### Required Python Libraries
 * PyQt5
 * PyQtGraph
 * Pandas
 * NumPy
 
-#### Task List
+### Task List
 - [ ] proper data stream to dataframe
 - [ ] add numerical fields (not just graphs)
 - [ ] mathematical operations on datasets (for calculating total thrust or pressure drop or what not)
