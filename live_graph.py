@@ -50,57 +50,57 @@ quit = QtGui.QPushButton("Quit")
 quit.clicked.connect(exit)
 layout.addWidget(quit, zr+1, zc+0)
 
+settings = pd.read_csv("graph_settings.csv")
+
 #initialize data arrays (for testing only)
 #TODO: switch to pandas dataframe to imitate SQL table/database
-cols = ['time', 'cos(x)', '-cos(x)', 'cos(x) + -cos(x)']
+cols = ['time', 'cos', 'neg_cos', 'destruc']
 database = pd.DataFrame(columns=cols)
 
-#function to add plotItems to GraphicsLayout and format them
-def make_plot(coord, data_style, title='', xlab='', ylab=''):
-    plot = []
-    plot.append(plot_box.addPlot(row=coord[0], col=coord[1], title=title, labels={"left":ylab,"bottom":xlab}))
-    plot[0].addLegend()
-    print(data_style)
-    for dataset in data_style:
-        plot.append(plot[0].plot(name=dataset[0], pen=dataset[1]))
-    return plot
-
-#make PlotDefinitions and add to list for easy iteration
+#list for easy iteration through plots
 plots = []
-plots.append(PlotDefinition((0,0), title='cos', xlabel='time(s)'))
-plots.append(PlotDefinition((0,1), title='-cos', xlabel='time(s)'))
-plots.append(PlotDefinition((1,0), title='destructive interference', xlabel='time(s)'))
-plots.append(PlotDefinition((1,1), title='cos and -cos', xlabel='time(s)'))
 
-#set x axis (will be database["time"])
-for p in plots:
-    p.setX('time')
+#for each plot in parameters
+for i in range(len(settings.index)):
+    #get parameters for plot
+    row = settings.ix[i]
 
-#add y datasets to each plot (note p4 has 2 datasets)
-plots[0].addY('cos(x)','r')
-plots[1].addY('-cos(x)','g')
-plots[2].addY('cos(x) + -cos(x)','b')
-plots[3].addY('cos(x)','r')
-plots[3].addY('-cos(x)','g')
+    #plot location on screen
+    subplot = (row['row'], row['col'])
 
-#make the plots and push them to window
-for p in plots:
-    p.makePlot(plot_box)
+    #initialize plot and add to list
+    plots.append(PlotDefinition(subplot, title=row['title'], xlabel=row['xlabel']))
+
+    #set x data
+    plots[i].setX(row['x'])
+
+    #parse y data
+    ys = row['y'].split(' | ')
+    pens = row['pen'].split(' | ')
+    aliases = row['alias'].split(' | ')
+    params = zip(ys, pens, aliases)
+
+    #push y data to plot
+    for param in params:
+        plots[i].addY(param)
+
+    #make plot and push to window
+    plots[i].makePlot(plot_box)
 
 #fake data stream in place of serial or some other type of read in
 def fake_data():
     t = pg.ptime.time() - start_time
     y1 = np.cos(2 * np.pi * (t%500))
-    y2 = -np.cos(2 * np.pi * (t%500))
-    return [t,y1,y2]
+    y2 = -y1
+    y3 = y1+y2
+    return [t,y1,y2,y3]
 
 #update function runs on each tick
 def update():
     global database, cols
 
     #get data
-    t,y1,y2 = fake_data()
-    y3 = y1+y2
+    t,y1,y2,y3 = fake_data()
 
     #update database
     database = database.append(pd.DataFrame([[t,y1,y2,y3]],columns=cols))
