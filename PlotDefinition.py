@@ -22,9 +22,12 @@ class PlotDefinition:
         self.data.append(tup)
 
     #makes a PlotItem with proper labels and formatting and pushes it to GraphicsLayout
-    def makePlot(self, plot_box):
+    def makePlot(self, plot_box, show_legend=True, show_grid=True):
         self.parent = plot_box.addPlot(row=self.coords[0], col=self.coords[1], title=self.title, labels=self.labels)
-        self.parent.addLegend()
+        if show_legend:
+            self.parent.addLegend()
+        if show_grid:
+            self.parent.showGrid(x=True,y=True)
         for dataset in self.data:
             self.plots.append(self.parent.plot(name=dataset[2], pen=dataset[1]))
 

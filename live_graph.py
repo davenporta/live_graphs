@@ -30,8 +30,16 @@ w.setLayout(layout)
 zr = 0
 zc = 0
 
+#number of points to store given tick_rate and seconds_to_store
+def tickCalc(tr, s):
+    return int(s/(tr/1000))
+
 #max number of datapoints to store/retrieve
-data_range = 200
+tick_rate = 40 #in ms (calculated limit at about 35-40 ms)
+seconds_to_store = 30
+data_range = tickCalc(tick_rate, seconds_to_store) #this isn't right and I don't know why
+#last_time = pg.ptime.time()
+
 
 #add area for tiled plots
 plot_box = pg.GraphicsLayoutWidget()
@@ -74,7 +82,7 @@ for i in range(len(settings.index)):
     subplot = (row['row'], row['col'])
 
     #initialize plot and add to list
-    plots.append(PlotDefinition(subplot, title=row['title'], xlabel=row['xlabel'], ylabel=row['ylabel']))
+    plots.append(PlotDefinition(subplot, title=row['title'], xlabel=row['xlabel'], ylabel=row['ylabel'], data_range=tickCalc(tick_rate, row['seconds'])))
 
     #set x data
     plots[i].setX(row['x'])
@@ -90,7 +98,7 @@ for i in range(len(settings.index)):
         plots[i].addY(param)
 
     #make plot and push to window
-    plots[i].makePlot(plot_box)
+    plots[i].makePlot(plot_box, show_legend=bool(row['legend']), show_grid=bool(row['grid']))
 
 #fake data stream in place of serial or some other type of read in
 def fake_data():
@@ -102,7 +110,10 @@ def fake_data():
 
 #update function runs on each tick
 def update():
-    global database, cols
+    global database, cols, last_time
+
+    #print(str((pg.ptime.time()-last_time)*1000-tick_rate) + " ms lag time this tick")
+    #last_time = pg.ptime.time()
 
     #get data
     t,y1,y2,y3 = fake_data()
@@ -123,7 +134,7 @@ w.showMaximized()
 #timer and tick updates
 timer = pg.QtCore.QTimer()
 timer.timeout.connect(update)
-timer.start(100) # 10hz
+timer.start(tick_rate)
 
 ## Start the Qt event loop
 app.exec_()
