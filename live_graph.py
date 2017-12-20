@@ -24,6 +24,7 @@ top = QtGui.QMainWindow()
 w = QtGui.QWidget()
 top.setCentralWidget(w)
 top.setWindowTitle(run_name)
+app.setWindowIcon(QtGui.QIcon('logos/logo.png'))
 # layout grid
 layout = QtGui.QGridLayout()
 w.setLayout(layout)
