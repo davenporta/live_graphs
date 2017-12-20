@@ -32,16 +32,20 @@ w.setLayout(layout)
 zr = 0
 zc = 0
 
+#load app settings (in the future will enable a settings menu)
+app_settings = pd.read_csv("app_settings.csv")
+
+
 #load graph settings
-settings = pd.read_csv("graph_settings.csv")
+graph_settings = pd.read_csv(app_settings['graph_settings_path'][0])
 
 #number of points to store given tick_rate and seconds_to_store
 def tickCalc(tr, s):
     return int(s/(tr/1000))
 
 #max number of datapoints to store/retrieve
-tick_rate = 40 #in ms (calculated limit at about 35-40 ms)
-seconds_to_store = settings['seconds'].max() #save as much memory as possible (keep only what's needed)
+tick_rate = app_settings['tick_rate'][0] #in ms (calculated limit at about 35-40 ms)
+seconds_to_store = graph_settings['seconds'].max() #save as much memory as possible (keep only what's needed)
 data_range = tickCalc(tick_rate, seconds_to_store) #this isn't right and I don't know why
 #last_time = pg.ptime.time()
 
@@ -85,9 +89,9 @@ dataMenu.addAction(clear_data)
 plots = []
 
 #for each plot in parameters
-for i in range(len(settings.index)):
+for i in range(len(graph_settings.index)):
     #get parameters for plot
-    row = settings.ix[i]
+    row = graph_settings.ix[i]
 
     #plot location on screen
     subplot = (row['row'], row['col'])
