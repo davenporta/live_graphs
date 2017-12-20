@@ -5,6 +5,8 @@ Live graph dashboard for MASA testing
 
 ### Plot Configuration
 Easily configurable with graph_settings.csv file
+Each row is a separate plots
+Add as many as you'd like
 
 Column | Function
 ------ | --------
@@ -26,8 +28,9 @@ seconds | seconds of data to plot (up to `seconds_to_store`)
 * NumPy
 
 ### Task List
-- [ ] proper data stream to dataframe
+- [ ] proper data stream to dataframe (networking)
 - [ ] add numerical fields (not just graphs)
 - [ ] mathematical operations on datasets (for calculating total thrust or pressure drop or what not)
 - [ ] figure out window sizing
 - [ ] pretty things up
+- [ ] settings menu
