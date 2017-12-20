@@ -3,8 +3,8 @@ Live graph dashboard for MASA testing
 
 -----------------------
 
-### Configuration
-Easily configurable with settings.csv file
+### Plot Configuration
+Easily configurable with graph_settings.csv file
 
 Column | Function
 ------ | --------
